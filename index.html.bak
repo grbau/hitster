@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Hister Bingo – Générateur de cartes</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #eee;
+  padding: 20px;
+}
+.container {
+  display: flex;
+  gap: 30px;
+}
+.form {
+  width: 320px;
+}
+label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+input, select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+}
+button {
+  margin-top: 15px;
+  padding: 10px;
+  width: 100%;
+  font-size: 16px;
+}
+canvas {
+  border: 1px solid #999;
+  margin-bottom: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎵 Générateur de cartes Hister Bingo</h1>
+
+<div class="container">
+
+<div class="form">
+  <label>Artiste</label>
+  <input id="artist" value="Zaho">
+
+  <label>Titre</label>
+  <input id="title" value="Je te promets">
+
+  <label>Année</label>
+  <input id="year" value="2018">
+
+  <label>Type</label>
+  <select id="type">
+    <option value="solo">Solo</option>
+    <option value="duo">Duo</option>
+    <option value="group">Groupe</option>
+  </select>
+
+  <label>Numéro</label>
+  <input id="number" value="176">
+
+  <label>Référence</label>
+  <input id="ref" value="FRB01">
+
+  <label>Lien Spotify</label>
+  <input id="link" value="https://open.spotify.com/track/1CPZ5BxNNd0n0nF4Orb9JS">
+
+  <label>Taille carte (cm)</label>
+  <input id="size" type="number" value="8">
+
+  <button onclick="generate()">Générer la carte</button>
+</div>
+
+<div>
+  <h3>Recto</h3>
+  <canvas id="front"></canvas>
+  <h3>Verso</h3>
+  <canvas id="back"></canvas>
+</div>
+
+</div>
+
+<script>
+function generate() {
+  const artist = artistInput.value;
+  const title = titleInput.value;
+  const year = yearInput.value;
+  const type = typeInput.value;
+  const num = numberInput.value;
+  const ref = refInput.value;
+  const link = linkInput.value;
+  const size = (sizeInput.value || 8) * 37.8;
+
+  // RECTO
+  front.width = front.height = size;
+  const f = front.getContext("2d");
+  f.fillStyle = "#A78BC6";
+  f.fillRect(0,0,size,size);
+
+  f.fillStyle = "white";
+  f.font = size*0.08+"px Arial";
+  f.fillText("🌐", size*0.05, size*0.12);
+  f.fillText(type==="solo"?"👤":"👥", size*0.88, size*0.12);
+
+  f.fillStyle = "black";
+  f.font = size*0.1+"px Arial";
+  f.fillText(artist, size*0.05, size*0.22);
+
+  f.font = size*0.32+"px Arial Black";
+  f.fillText(year, size*0.05, size*0.55);
+
+  f.font = size*0.1+"px Arial";
+  f.fillText(title, size*0.05, size*0.75);
+
+  f.font = size*0.06+"px Arial";
+  f.fillText(ref, size*0.05, size*0.95);
+  f.fillText(num, size*0.9, size*0.95);
+
+  // VERSO
+  back.width = back.height = size;
+  const b = back.getContext("2d");
+  b.fillStyle = "#000";
+  b.fillRect(0,0,size,size);
+
+  ["#ff0055","#ffcc00","#00bfff","#00ff88"].forEach((c,i)=>{
+    b.strokeStyle = c;
+    b.lineWidth = size*0.03;
+    b.beginPath();
+    b.arc(size/2,size/2,size*0.25+i*8,0,Math.PI*2);
+    b.stroke();
+  });
+
+  const qr = new QRious({value: link, size: size*0.45});
+  const img = new Image();
+  img.onload = ()=>{
+    b.drawImage(img,size*0.275,size*0.275);
+    b.fillStyle="white";
+    b.font=size*0.06+"px Arial";
+    b.fillText(num,size*0.9,size*0.95);
+  };
+  img.src = qr.toDataURL();
+}
+
+const artistInput = document.getElementById("artist");
+const titleInput = document.getElementById("title");
+const yearInput = document.getElementById("year");
+const typeInput = document.getElementById("type");
+const numberInput = document.getElementById("number");
+const refInput = document.getElementById("ref");
+const linkInput = document.getElementById("link");
+const sizeInput = document.getElementById("size");
+const front = document.getElementById("front");
+const back = document.getElementById("back");
+</script>
+
+</body>
+</html>
