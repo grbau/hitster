@@ -1,4 +1,5 @@
 import type { CardData, ArtistType } from '../types/card'
+import { SpotifySearch } from './SpotifySearch'
 
 interface CardFormProps {
   data: CardData
@@ -11,9 +12,20 @@ export function CardForm({ data, onChange, onGenerate }: CardFormProps) {
     onChange({ ...data, [field]: value })
   }
 
+  const handleSpotifySelect = (partialData: Partial<CardData>) => {
+    onChange({ ...data, ...partialData })
+  }
+
   return (
     <div className="card">
       <h2 className="card-title">Informations de la carte</h2>
+
+      {/* Music Search */}
+      <div className="spotify-section">
+        <SpotifySearch onSelect={handleSpotifySelect} />
+      </div>
+
+      <div className="form-divider"></div>
 
       <div className="form-group">
         <label className="form-label">Artiste</label>

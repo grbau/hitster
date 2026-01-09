@@ -3,6 +3,35 @@ import type { CardData } from '../types/card'
 
 const CM_TO_PX = 37.8
 
+// Helper function to wrap text
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number
+): string[] {
+  const words = text.split(' ')
+  const lines: string[] = []
+  let currentLine = ''
+
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word
+    const metrics = ctx.measureText(testLine)
+
+    if (metrics.width > maxWidth && currentLine) {
+      lines.push(currentLine)
+      currentLine = word
+    } else {
+      currentLine = testLine
+    }
+  }
+
+  if (currentLine) {
+    lines.push(currentLine)
+  }
+
+  return lines
+}
+
 export function renderFrontCard(canvas: HTMLCanvasElement, data: CardData): void {
   const size = data.size * CM_TO_PX
   canvas.width = size
@@ -23,18 +52,31 @@ export function renderFrontCard(canvas: HTMLCanvasElement, data: CardData): void
   const typeIcon = data.type === 'solo' ? '👤' : '👥'
   ctx.fillText(typeIcon, size * 0.88, size * 0.12)
 
-  // Artist
+  // Artist (with wrapping)
   ctx.fillStyle = 'black'
   ctx.font = `${size * 0.1}px Arial`
-  ctx.fillText(data.artist, size * 0.05, size * 0.22)
+  const maxWidth = size * 0.9
+  const artistLines = wrapText(ctx, data.artist, maxWidth)
+  let artistY = size * 0.22
+  for (const line of artistLines.slice(0, 2)) { // Max 2 lines for artist
+    ctx.fillText(line, size * 0.05, artistY)
+    artistY += size * 0.1
+  }
 
   // Year (big)
   ctx.font = `bold ${size * 0.32}px Arial`
   ctx.fillText(data.year, size * 0.05, size * 0.55)
 
-  // Title
-  ctx.font = `${size * 0.1}px Arial`
-  ctx.fillText(data.title, size * 0.05, size * 0.75)
+  // Title (with wrapping, smaller font)
+  const titleFontSize = size * 0.07
+  ctx.font = `${titleFontSize}px Arial`
+  const titleLines = wrapText(ctx, data.title, maxWidth)
+  let titleY = size * 0.70
+  const lineHeight = titleFontSize * 1.2
+  for (const line of titleLines.slice(0, 3)) { // Max 3 lines for title
+    ctx.fillText(line, size * 0.05, titleY)
+    titleY += lineHeight
+  }
 
   // Created by and date (on same line)
   ctx.font = `${size * 0.05}px Arial`
