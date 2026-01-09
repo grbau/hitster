@@ -180,6 +180,17 @@ export function CardPreview({ data, shouldRender }: CardPreviewProps) {
           </button>
         </div>
       )}
+
+      {data.spotifyLink && (
+        <a
+          href={data.spotifyLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-spotify-link"
+        >
+          🎵 Écouter sur Spotify
+        </a>
+      )}
     </div>
   )
 }

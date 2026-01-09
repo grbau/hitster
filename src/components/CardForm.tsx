@@ -1,5 +1,6 @@
 import type { CardData, ArtistType } from '../types/card'
 import { SpotifySearch } from './SpotifySearch'
+import { ThemeSelector } from './ThemeSelector'
 
 interface CardFormProps {
   data: CardData
@@ -23,6 +24,11 @@ export function CardForm({ data, onChange, onGenerate }: CardFormProps) {
       {/* Music Search */}
       <div className="spotify-section">
         <SpotifySearch onSelect={handleSpotifySelect} />
+      </div>
+
+      {/* Theme Selector */}
+      <div className="theme-section">
+        <ThemeSelector onSelect={handleSpotifySelect} />
       </div>
 
       <div className="form-divider"></div>

@@ -499,3 +499,131 @@ body {
 .btn-play.playing:hover {
   box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
 }
+
+/* Theme Selector */
+.theme-section {
+  margin-top: 1rem;
+}
+
+.theme-selector {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.theme-selector-header {
+  margin-bottom: 0.75rem;
+}
+
+.theme-selector-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.theme-selector-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.theme-selector-filters .form-select {
+  flex: 1;
+  min-width: 140px;
+}
+
+.btn-theme-search {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-theme-search:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.btn-theme-search:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.theme-suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0 0;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.75rem;
+}
+
+.theme-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: background 0.15s ease;
+}
+
+.theme-suggestion-item:hover {
+  background: #e2e8f0;
+}
+
+.theme-no-results {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.375rem;
+  color: #dc2626;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.result-has-preview {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1db954;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+}
+
+/* Spotify Link Button */
+.btn-spotify-link {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: #1db954;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-spotify-link:hover {
+  background: #1ed760;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.4);
+}
