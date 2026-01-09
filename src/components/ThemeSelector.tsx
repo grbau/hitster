@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { getAvailableGenres, getRandomTracks, getFrenchHits, transformITunesTrack, ITunesTrack } from '../services/itunes'
+import { detectArtistType } from '../services/musicbrainz'
 import type { CardData } from '../types/card'
 
 interface ThemeSelectorProps {
@@ -77,16 +78,35 @@ export function ThemeSelector({ onSelect }: ThemeSelectorProps) {
     }
   }
 
-  const handleSelectTrack = (track: ReturnType<typeof transformITunesTrack>) => {
+  const handleSelectTrack = async (track: ReturnType<typeof transformITunesTrack>) => {
+    const artistName = track.artists.map(a => a.name).join(', ')
+    const year = track.album.release_date ? new Date(track.album.release_date).getFullYear().toString() : ''
+
+    // Envoyer les données de base immédiatement
     onSelect({
-      artist: track.artists.map(a => a.name).join(', '),
+      artist: artistName,
       title: track.name,
-      year: track.album.release_date ? new Date(track.album.release_date).getFullYear().toString() : '',
+      year,
       spotifyLink: track.external_urls.spotify,
       previewUrl: track.previewUrl,
     })
     setSuggestions([])
-    setShowTypeWarning(true)
+
+    // Récupérer le type d'artiste via MusicBrainz (en arrière-plan)
+    try {
+      const type = await detectArtistType(artistName)
+      onSelect({
+        artist: artistName,
+        title: track.name,
+        year,
+        spotifyLink: track.external_urls.spotify,
+        previewUrl: track.previewUrl,
+        type,
+      })
+    } catch (error) {
+      console.error('Error detecting artist type:', error)
+      setShowTypeWarning(true)
+    }
   }
 
   const getTrackYear = (track: ReturnType<typeof transformITunesTrack>) => {

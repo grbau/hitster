@@ -5,6 +5,7 @@ import {
   getTrackYear,
   getArtistNames,
 } from '../services/spotify'
+import { detectArtistType } from '../services/musicbrainz'
 import type { CardData } from '../types/card'
 
 interface SpotifySearchProps {
@@ -57,20 +58,37 @@ export function SpotifySearch({ onSelect }: SpotifySearchProps) {
     }
   }, [query])
 
-  const handleSelect = (track: SpotifyTrack) => {
-    // Note: We don't auto-fill 'type' because there's no reliable way to know
-    // if an artist name represents a solo artist or a group (e.g., "U2" is a group)
+  const handleSelect = async (track: SpotifyTrack) => {
+    const artistName = getArtistNames(track)
+
+    // Envoyer les données de base immédiatement
     onSelect({
-      artist: getArtistNames(track),
+      artist: artistName,
       title: track.name,
       year: getTrackYear(track),
       spotifyLink: track.external_urls.spotify,
       previewUrl: track.previewUrl,
     })
+
     setQuery('')
     setResults([])
     setShowResults(false)
-    setShowTypeWarning(true)
+
+    // Récupérer le type d'artiste via MusicBrainz (en arrière-plan)
+    try {
+      const type = await detectArtistType(artistName)
+      onSelect({
+        artist: artistName,
+        title: track.name,
+        year: getTrackYear(track),
+        spotifyLink: track.external_urls.spotify,
+        previewUrl: track.previewUrl,
+        type,
+      })
+    } catch (error) {
+      console.error('Error detecting artist type:', error)
+      setShowTypeWarning(true)
+    }
   }
 
   return (
