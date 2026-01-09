@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import type { CardData, ArtistType } from '../types/card'
 import { SpotifySearch } from './SpotifySearch'
 import { ThemeSelector } from './ThemeSelector'
@@ -9,12 +10,18 @@ interface CardFormProps {
 }
 
 export function CardForm({ data, onChange, onGenerate }: CardFormProps) {
+  const generateButtonRef = useRef<HTMLButtonElement>(null)
+
   const updateField = <K extends keyof CardData>(field: K, value: CardData[K]) => {
     onChange({ ...data, [field]: value })
   }
 
   const handleSpotifySelect = (partialData: Partial<CardData>) => {
     onChange({ ...data, ...partialData })
+    // Scroll vers le bouton générer après sélection
+    setTimeout(() => {
+      generateButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
   }
 
   return (
@@ -123,7 +130,7 @@ export function CardForm({ data, onChange, onGenerate }: CardFormProps) {
         />
       </div>
 
-      <button onClick={onGenerate} className="btn-primary">
+      <button ref={generateButtonRef} onClick={onGenerate} className="btn-primary">
         Générer la carte
       </button>
     </div>
