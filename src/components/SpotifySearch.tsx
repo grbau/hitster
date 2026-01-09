@@ -5,7 +5,7 @@ import {
   getTrackYear,
   getArtistNames,
 } from '../services/spotify'
-import { detectArtistType } from '../services/musicbrainz'
+import { getArtistTypeFromMusicBrainz } from '../services/musicbrainz'
 import type { CardData } from '../types/card'
 
 interface SpotifySearchProps {
@@ -60,8 +60,35 @@ export function SpotifySearch({ onSelect }: SpotifySearchProps) {
 
   const handleSelect = async (track: SpotifyTrack) => {
     const artistName = getArtistNames(track)
+    let artistCount = track.artists.length
 
-    // Envoyer les données de base immédiatement
+    // Vérifier aussi les featurings dans le titre du morceau (ex: "Confessions nocturnes (feat. Vitaa)")
+    const featRegex = /\(?\s*(?:feat(?:uring)?\.?|ft\.?|with|et|and|avec|vs\.?|x)\s+([^)]+)\)?/i
+    const featMatch = track.name.match(featRegex)
+    if (featMatch) {
+      // Compter les artistes supplémentaires dans le featuring
+      const featArtists = featMatch[1].split(/\s*(?:&|,)\s*/).filter(a => a.trim().length > 0)
+      artistCount += featArtists.length
+    }
+
+    // Si plusieurs artistes détectés, on peut déterminer le type directement
+    if (artistCount >= 2) {
+      const type = artistCount === 2 ? 'duo' : 'group'
+      onSelect({
+        artist: artistName,
+        title: track.name,
+        year: getTrackYear(track),
+        spotifyLink: track.external_urls.spotify,
+        previewUrl: track.previewUrl,
+        type,
+      })
+      setQuery('')
+      setResults([])
+      setShowResults(false)
+      return
+    }
+
+    // Un seul artiste - envoyer les données de base immédiatement
     onSelect({
       artist: artistName,
       title: track.name,
@@ -74,16 +101,16 @@ export function SpotifySearch({ onSelect }: SpotifySearchProps) {
     setResults([])
     setShowResults(false)
 
-    // Récupérer le type d'artiste via MusicBrainz (en arrière-plan)
+    // Récupérer le type d'artiste via MusicBrainz (en arrière-plan) pour savoir si c'est un solo ou un groupe
     try {
-      const type = await detectArtistType(artistName)
+      const type = await getArtistTypeFromMusicBrainz(artistName)
       onSelect({
         artist: artistName,
         title: track.name,
         year: getTrackYear(track),
         spotifyLink: track.external_urls.spotify,
         previewUrl: track.previewUrl,
-        type,
+        type: type || 'solo',
       })
     } catch (error) {
       console.error('Error detecting artist type:', error)

@@ -85,7 +85,8 @@ export async function getArtistTypeFromMusicBrainz(artistName: string): Promise<
  */
 export async function detectArtistType(artistName: string): Promise<ArtistType> {
   // D'abord, vérifier s'il y a plusieurs artistes (collaborations)
-  const separators = /\s*(?:&|,|\bfeat\.?\b|\bft\.?\b|\bwith\b|\bet\b|\bx\b)\s*/i
+  // Regex étendu pour capturer plus de variations: feat, featuring, ft, ft., &, and, avec, with, x, vs, etc.
+  const separators = /\s*(?:&|,|\/|\bfeat(?:uring)?\.?\b|\bft\.?\b|\bwith\b|\bet\b|\band\b|\bavec\b|\bvs\.?\b|\bx\b)\s*/i
   const artists = artistName.split(separators).filter(a => a.trim().length > 0)
 
   if (artists.length >= 3) {

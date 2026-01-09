@@ -201,10 +201,16 @@ export async function getFrenchHits(yearStart?: number, yearEnd?: number): Promi
 
 // Transform iTunes track to our format (compatible with SpotifyTrack)
 export function transformITunesTrack(track: ITunesTrack) {
+  // Parse multiple artists from artistName (separated by &, feat., ft., ,, etc.)
+  const artistNames = track.artistName
+    .split(/\s*(?:&|,|\bfeat(?:uring)?\.?\b|\bft\.?\b|\bwith\b|\bet\b|\bavec\b|\bx\b|\bvs\.?\b)\s*/i)
+    .map(a => a.trim())
+    .filter(a => a.length > 0)
+
   return {
     id: String(track.trackId),
     name: track.trackName,
-    artists: [{ name: track.artistName }],
+    artists: artistNames.map(name => ({ name })),
     album: {
       name: track.collectionName,
       release_date: track.releaseDate,
