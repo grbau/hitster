@@ -12,6 +12,7 @@ export interface SpotifyTrack {
   external_urls: {
     spotify: string
   }
+  previewUrl?: string
 }
 
 export async function searchTracks(query: string): Promise<SpotifyTrack[]> {
@@ -66,6 +67,7 @@ async function searchTracksAlternative(query: string): Promise<SpotifyTrack[]> {
       releaseDate: string
       artworkUrl100: string
       trackViewUrl: string
+      previewUrl?: string
     }) => {
       // Parse multiple artists from artistName (separated by &, feat., ft., ,, etc.)
       const artistNames = track.artistName
@@ -89,6 +91,7 @@ async function searchTracksAlternative(query: string): Promise<SpotifyTrack[]> {
         external_urls: {
           spotify: `https://open.spotify.com/search/${encodeURIComponent(track.trackName + ' ' + track.artistName)}`,
         },
+        previewUrl: track.previewUrl,
       }
     })
   } catch (error) {

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CardData } from '../types/card'
 import { renderFrontCard, renderBackCard } from '../utils/cardRenderer'
 
@@ -10,6 +10,8 @@ interface CardPreviewProps {
 export function CardPreview({ data, shouldRender }: CardPreviewProps) {
   const frontCanvasRef = useRef<HTMLCanvasElement>(null)
   const backCanvasRef = useRef<HTMLCanvasElement>(null)
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
     if (!shouldRender) return
@@ -152,6 +154,32 @@ export function CardPreview({ data, shouldRender }: CardPreviewProps) {
       <button onClick={printCards} className="btn-print">
         Imprimer les cartes
       </button>
+
+      {data.previewUrl && (
+        <div className="preview-player">
+          <audio
+            ref={audioRef}
+            src={data.previewUrl}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onEnded={() => setIsPlaying(false)}
+          />
+          <button
+            onClick={() => {
+              if (audioRef.current) {
+                if (isPlaying) {
+                  audioRef.current.pause()
+                } else {
+                  audioRef.current.play()
+                }
+              }
+            }}
+            className={`btn-play ${isPlaying ? 'playing' : ''}`}
+          >
+            {isPlaying ? '⏸ Pause' : '▶ Écouter un extrait'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

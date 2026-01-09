@@ -65,6 +65,7 @@ export function SpotifySearch({ onSelect }: SpotifySearchProps) {
       title: track.name,
       year: getTrackYear(track),
       spotifyLink: track.external_urls.spotify,
+      previewUrl: track.previewUrl,
     })
     setQuery('')
     setResults([])

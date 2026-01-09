@@ -8,6 +8,7 @@ export interface CardData {
   createdBy: string
   createdAt: string
   spotifyLink: string
+  previewUrl?: string
   size: number
 }
 
