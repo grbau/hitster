@@ -80,6 +80,13 @@ body {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
 }
 
+@media (max-width: 400px) {
+  .card {
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
+}
+
 .card-title {
   font-size: 1.25rem;
   font-weight: 700;
@@ -246,11 +253,14 @@ body {
 .canvas-container {
   display: flex;
   justify-content: center;
+  overflow: hidden;
 }
 
 .canvas-container canvas {
   border-radius: 0.5rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 100%;
+  height: auto;
 }
 
 /* Footer */
