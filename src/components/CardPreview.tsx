@@ -25,6 +25,15 @@ export function CardPreview({ data, shouldRender }: CardPreviewProps) {
     }
   }, [data, shouldRender])
 
+  // Réinitialiser l'audio quand une nouvelle carte est générée
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+    }
+    setIsPlaying(false)
+  }, [data.previewUrl])
+
   const downloadCard = (canvas: HTMLCanvasElement | null, filename: string) => {
     if (!canvas) return
     const link = document.createElement('a')
