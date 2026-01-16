@@ -9,6 +9,29 @@ interface CardFormProps {
   onGenerate: () => void
 }
 
+// Recherche le previewUrl et spotifyLink via iTunes si non définis
+async function fetchPreviewFromiTunes(artist: string, title: string): Promise<{ previewUrl?: string; spotifyLink?: string }> {
+  try {
+    const query = `${artist} ${title}`
+    const response = await fetch(
+      `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=1`
+    )
+    if (!response.ok) return {}
+
+    const data = await response.json()
+    if (data.results && data.results.length > 0) {
+      const track = data.results[0]
+      return {
+        previewUrl: track.previewUrl,
+        spotifyLink: `https://open.spotify.com/search/${encodeURIComponent(track.trackName + ' ' + track.artistName)}`
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching preview from iTunes:', error)
+  }
+  return {}
+}
+
 export function CardForm({ data, onChange, onGenerate }: CardFormProps) {
   const generateButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -22,6 +45,21 @@ export function CardForm({ data, onChange, onGenerate }: CardFormProps) {
     setTimeout(() => {
       generateButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }, 100)
+  }
+
+  const handleGenerate = async () => {
+    // Si pas de previewUrl, essayer de le récupérer via iTunes
+    if (!data.previewUrl && data.artist && data.title) {
+      const { previewUrl, spotifyLink } = await fetchPreviewFromiTunes(data.artist, data.title)
+      if (previewUrl || spotifyLink) {
+        onChange({
+          ...data,
+          previewUrl: previewUrl || data.previewUrl,
+          spotifyLink: spotifyLink || data.spotifyLink
+        })
+      }
+    }
+    onGenerate()
   }
 
   return (
@@ -130,7 +168,7 @@ export function CardForm({ data, onChange, onGenerate }: CardFormProps) {
         />
       </div>
 
-      <button ref={generateButtonRef} onClick={onGenerate} className="btn-primary">
+      <button ref={generateButtonRef} onClick={handleGenerate} className="btn-primary">
         Générer la carte
       </button>
     </div>
